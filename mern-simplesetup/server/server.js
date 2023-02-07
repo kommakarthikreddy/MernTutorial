@@ -1,21 +1,29 @@
-import path from 'path'
-import express from 'express'
-import { MongoClient } from 'mongodb'
 import config from './../config/config'
-import template from './../template'
-//comment out before building for production
-import devBundle from './devBundle'
+import app from './express'
+import mongoose from 'mongoose'
+import { MongoClient } from 'mongodb'
 
-const app = express()
-//comment out before building for production
-devBundle.compile(app)
+const url = process.env.MONGODB_URI || 'mongodb://localhost:27017/mernproject'
+// Use connect method to connect to the server
+// MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true },(err, db)=>{
+//   console.log("Connected successfully to mongodb server")
+//   db.close()
+// })
 
-const CURRENT_WORKING_DIR = process.cwd()
-app.use('/dist', express.static(path.join(CURRENT_WORKING_DIR, 'dist')))
+// Connection URL
+mongoose.Promise = global.Promise
+mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
+/*.then(()=> {console.log ("S?UCCESS")},error => {
+  console.log (error);
+})*/
 
-app.get('/', (req, res) => {
-  res.status(200).send(template())
+mongoose.connection.on('error', () => {
+  throw new Error(`unable to connect to database: ${mongoUri}`)
+  })
+
+app.listen(config.port, (err) => {
+  if (err) {
+    console.log(err)
+  }
+  console.info('Server started on port %s.', config.port)
 })
-
-let port = process.env.PORT || 3000
-

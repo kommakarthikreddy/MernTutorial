@@ -9,8 +9,9 @@ const compile = (app) => {
     const middleware = webpackMiddleware(compiler, {
       publicPath: webpackConfig.output.publicPath
     })
-    app.use(middleware)
-    app.use(webpackHotMiddleware(compiler))
+    const hotMiddlware = webpackHotMiddleware(compiler);
+    app.use(middleware);
+    app.use(hotMiddlware);
   }
 }
 
